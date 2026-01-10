@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Img1 from "@/pic/1.jpg";
 import Img2 from "@/pic/2.jpg";
 import Img3 from "@/pic/3.jpg";
 import Img4 from "@/pic/4.jpg";
+import { ProductQuickView } from "@/components/ProductQuickView";
 
 const products = [
   {
@@ -52,6 +56,16 @@ const products = [
 ];
 
 const ProductListPage = () => {
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleProductClick = (productId: number) => {
+    setSelectedProductId(productId);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 px-4 py-10 font-sans dark:bg-black sm:px-6 lg:px-10">
       <main className="mx-auto w-full max-w-6xl">
@@ -68,7 +82,8 @@ const ProductListPage = () => {
           {products.map((product) => (
             <article
               key={product.id}
-              className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100 transition hover:-translate-y-1 hover:shadow-md hover:ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800"
+              onClick={() => handleProductClick(product.id)}
+              className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-zinc-100 transition hover:-translate-y-1 hover:shadow-md hover:ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800 cursor-pointer"
             >
               <div className="relative bg-zinc-100 dark:bg-zinc-900">
                 <Image
@@ -94,8 +109,15 @@ const ProductListPage = () => {
                     {product.badges.map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-full border border-emerald-200 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:text-emerald-300"
+                        className="flex items-center gap-1.5 rounded-full border border-emerald-200 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:text-emerald-300"
                       >
+                        <Image
+                          src="/pic/logo.svg"
+                          alt="Logo"
+                          width={14}
+                          height={14}
+                          className="h-3.5 w-3.5"
+                        />
                         {badge}
                       </span>
                     ))}
@@ -116,7 +138,10 @@ const ProductListPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                  <div
+                    className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 text-sm hover:border-zinc-900 hover:text-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-400 dark:hover:text-zinc-100"
                       aria-label="Yêu thích"
@@ -136,9 +161,14 @@ const ProductListPage = () => {
           ))}
         </section>
       </main>
+
+      <ProductQuickView
+        productId={selectedProductId}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 };
 
 export default ProductListPage;
-
